@@ -48,7 +48,7 @@ pub fn run() -> Result<(), failure::Error> {
                     .render(&mut f, main[1]);
             }
             
-            let chunks = Layout::default()
+                let chunks = Layout::default()
                 .direction(Direction::Horizontal)
                 .constraints([Constraint::Percentage(50), Constraint::Percentage(50)].as_ref())
                 .split(main[0]);
