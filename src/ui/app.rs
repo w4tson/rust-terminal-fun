@@ -1,4 +1,3 @@
-use crate::github::{Repo};
 use tui::style::{Color, Style};
 use crate::devoxx::model::ScheduleItem;
 use chrono::Weekday;
@@ -6,6 +5,7 @@ use chrono::Weekday;
 #[derive(PartialEq)]
 pub enum Mode {
     NORMAL,
+    FILTERED,
     SEARCH
 }
 

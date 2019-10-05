@@ -1,7 +1,6 @@
 pub mod model;
 use std::fs;
-use chrono::{DateTime, Utc};
-use crate::devoxx::model::{Talk, ScheduleItem};
+use crate::devoxx::model::{ScheduleItem};
 
 pub fn get_talks_by_day(day: &String) -> Result<Vec<ScheduleItem>, failure::Error> {
     let contents = fs::read_to_string(format!("devoxx-data/{}.json", day))?;

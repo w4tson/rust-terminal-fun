@@ -51,7 +51,7 @@ pub fn run() -> Result<(), failure::Error> {
                 .highlight_style(Style::default().fg(Color::Yellow))
                 .render(&mut f, main[0]);
             
-            if app.mode == Mode::SEARCH {
+            if app.mode == Mode::SEARCH || app.mode == Mode::FILTERED {
                 Paragraph::new([Text::raw(format!("/{}", &app.search_text))].iter())
                     .style(Style::default().fg(Color::Yellow))
                     .render(&mut f, main[2]);
@@ -148,7 +148,7 @@ pub fn run() -> Result<(), failure::Error> {
                     }
                 }
                 Key::Char('\n') if app.mode == Mode::SEARCH => {
-                    app.mode == Mode::NORMAL;
+                    app.mode = Mode::FILTERED;
                     terminal.hide_cursor()?;
                 }
                 Key::Char('/') => {
