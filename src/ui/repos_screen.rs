@@ -8,19 +8,20 @@ use termion::screen::AlternateScreen;
 use tui::backend::TermionBackend;
 use tui::layout::{Constraint, Direction, Layout, Alignment};
 use tui::style::{Color, Modifier, Style};
-use tui::widgets::{Block, Borders, SelectableList, Text, Widget, Paragraph};
+use tui::widgets::{Block, Borders, SelectableList, Text, Widget, Paragraph, Tabs};
 use tui::Terminal;
 
 use util::event::{Event, Events};
-use crate::github::{get_repos};
 use super::app::App;
 use std::io::Write;
 use termion::cursor::Goto;
 use crate::ui::app::Mode;
+use crate::devoxx::get_talks_by_day;
+use chrono::Weekday;
 
 
 pub fn run() -> Result<(), failure::Error> {
-    let repos = get_repos("w4tson")?;
+    let talks = get_talks_by_day(&"monday".to_string())?;
     
     // Terminal initialization
     let stdout = io::stdout().into_raw_mode()?;
@@ -33,30 +34,41 @@ pub fn run() -> Result<(), failure::Error> {
     let events = Events::new();
 
     // App
-    let mut app = App::new(repos);
+    let mut app = App::new(talks);
 
     loop {
         terminal.draw(|mut f| {
             let main = Layout::default()
                 .direction(Direction::Vertical)
-                .constraints([Constraint::Min(20), Constraint::Length(1)].as_ref())
+                .constraints([Constraint::Length(3), Constraint::Min(20), Constraint::Length(1)].as_ref())
                 .split(f.size());
 
+            Tabs::default()
+                .block(Block::default().borders(Borders::ALL).title("Day"))
+                .titles(&["Monday","Tuesday","Wednesday","Thursday", "Friday"])
+                .select(app.day.num_days_from_monday() as usize)
+                .style(Style::default().fg(Color::Cyan))
+                .highlight_style(Style::default().fg(Color::Yellow))
+                .render(&mut f, main[0]);
+            
             if app.mode == Mode::SEARCH {
                 Paragraph::new([Text::raw(format!("/{}", &app.search_text))].iter())
                     .style(Style::default().fg(Color::Yellow))
-                    .render(&mut f, main[1]);
+                    .render(&mut f, main[2]);
             }
             
-                let chunks = Layout::default()
-                .direction(Direction::Horizontal)
-                .constraints([Constraint::Percentage(50), Constraint::Percentage(50)].as_ref())
-                .split(main[0]);
+            
+            let chunks = Layout::default()
+            .direction(Direction::Horizontal)
+            .constraints([Constraint::Percentage(50), Constraint::Percentage(50)].as_ref())
+            .split(main[1]);
+
+           
 
             let style = Style::default().fg(Color::White).bg(Color::Black);
             SelectableList::default()
-                .block(Block::default().borders(Borders::ALL).title("Repository"))
-                .items(&app.repo_names())
+                .block(Block::default().borders(Borders::ALL).title("Talks"))
+                .items(&app.talk_titles())
                 .select(app.selected)
                 .style(style)
                 .highlight_style(style.bg(Color::LightGreen).fg(Color::White).modifier(Modifier::BOLD))
@@ -64,17 +76,17 @@ pub fn run() -> Result<(), failure::Error> {
                 .render(&mut f, chunks[0]);
             
 
-            if let Some(repo) = app.get_selected() {
+            if let Some(talk) = app.get_selected() {
                     
                 let text = vec![
-                    Text::styled(format!("Full Name: {}\n", repo.full_name), Style::default().fg(Color::Red)),
-                    Text::raw(format!("Owner: {}\n", repo.owner.login)),
-                    Text::raw(format!("Language: {}\n", repo.language.as_ref().unwrap_or(&("".to_string())))),
-                    Text::raw(format!("Created: {}\n", repo.created_at.to_rfc2822())),
+                    Text::styled(format!("Title: {}\n", talk.get_title()), Style::default().fg(Color::Yellow)),
+                    Text::raw(format!("Room : {}\n", talk.room_name)),
+                    Text::raw(format!("From : {}\n", talk.from_date.to_rfc2822())),
+                    Text::raw(format!("To   : {}\n", talk.to_date.to_rfc2822())),
                 ];
                 
                 Paragraph::new(text.iter())
-                    .block(Block::default().title("Repository Details").borders(Borders::ALL))
+                    .block(Block::default().title("Talk Details").borders(Borders::ALL))
                     .style(Style::default().fg(Color::White).bg(Color::Black))
                     .alignment(Alignment::Left)
                     .wrap(true)
@@ -98,13 +110,17 @@ pub fn run() -> Result<(), failure::Error> {
             Event::Input(input) => match input {
                 Key::Char('q') => {
                     break;
-                }
+                },
+                Key::Char('\t') => {
+                    app.day = if app.day == Weekday::Fri { Weekday::Mon } else { app.day.succ() };
+                    
+                },
                 Key::Left => {
                     app.selected = None;
                 }
                 Key::Down => {
                     app.selected = if let Some(selected) = app.selected {
-                        if selected >= app.repos().len() - 1 {
+                        if selected >= app.talks().len() - 1 {
                             Some(0)
                         } else {
                             Some(selected + 1)
@@ -118,7 +134,7 @@ pub fn run() -> Result<(), failure::Error> {
                         if selected > 0 {
                             Some(selected - 1)
                         } else {
-                            Some(app.repos().len() - 1)
+                            Some(app.talks().len() - 1)
                         }
                     } else {
                         Some(0)
@@ -126,8 +142,8 @@ pub fn run() -> Result<(), failure::Error> {
                 }
                 Key::Char('\n') if app.mode == Mode::NORMAL => {
                     if let Some(selected) = app.selected {
-                        if let Some(_repo) = app.repos.get(selected) {
-//                          pressed enter on a repo
+                        if let Some(_talk) = app.talks.get(selected) {
+//                          pressed enter on a talk
                         }
                     }
                 }

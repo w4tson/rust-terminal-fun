@@ -1,5 +1,7 @@
 use crate::github::{Repo};
 use tui::style::{Color, Style};
+use crate::devoxx::model::ScheduleItem;
+use chrono::Weekday;
 
 #[derive(PartialEq)]
 pub enum Mode {
@@ -7,9 +9,11 @@ pub enum Mode {
     SEARCH
 }
 
+
 #[allow(dead_code)]
 pub struct App {
-    pub repos: Vec<Repo>,
+    pub day: Weekday,
+    pub talks: Vec<ScheduleItem>,
     pub selected: Option<usize>,
     pub search_text : String,
     pub mode: Mode,
@@ -20,9 +24,10 @@ pub struct App {
 }
 
 impl App {
-    pub fn new(repos: Vec<Repo>) -> App {
+    pub fn new(talks: Vec<ScheduleItem>) -> App {
         App {
-            repos,
+            day : Weekday::Mon,
+            talks,
             search_text: String::new(),
             selected: Some(0),
             mode : Mode::NORMAL,
@@ -37,31 +42,31 @@ impl App {
         //tick
     }
 
-    pub fn get_selected(&self) -> Option<&Repo> {
+    pub fn get_selected(&self) -> Option<&ScheduleItem> {
         self.selected.map(|i |{
-            self.repos.get(i).unwrap()
+            self.talks.get(i).unwrap()
         })
     }
     
-    pub fn repos(&self) -> Vec<&Repo> {
-        self.repos
+    pub fn talks(&self) -> Vec<&ScheduleItem> {
+        self.talks
             .iter()
             .filter(|&repo| self.filter(repo))
             .collect()
     }
 
-    pub fn repo_names(&self) -> Vec<&str> {
-        self.repos()
+    pub fn talk_titles(&self) -> Vec<&str> {
+        self.talks()
             .iter()
-            .map(|repo| repo.name.as_str())
+            .map(|talk| talk.get_title())
             .collect()
     }
     
-    fn filter(&self, repo: &Repo) -> bool {
+    fn filter(&self, repo: &ScheduleItem) -> bool {
        if self.search_text.is_empty() {
            true
        } else {
-           repo.full_name.contains(&self.search_text)
+           repo.get_title().to_lowercase().contains(&self.search_text.to_lowercase())
        }
     }
 }

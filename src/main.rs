@@ -16,9 +16,9 @@ use crate::docker::hello_docker;
 
 pub mod docker;
 pub mod github;
-pub mod ui;
+pub mod ui; 
+pub mod devoxx; 
 
 fn main() -> Result<(), failure::Error> {
-//    hello_docker();
     ui::repos_screen::run()
 }
