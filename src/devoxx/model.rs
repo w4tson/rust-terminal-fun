@@ -12,7 +12,7 @@ pub struct Speaker {
 
 #[derive(Deserialize, Debug)]
 pub struct Tag {
-    name: String
+    pub name: String
 }
 
 #[derive(Deserialize, Debug)]
@@ -32,10 +32,12 @@ pub struct Talk {
 #[serde(rename_all = "camelCase")]
 pub struct ScheduleItem {
     pub talk_title: Option<String>,
+    pub talk_description: Option<String>,
     pub tags: Option<Vec<Tag>>,
     pub room_name: String,
     pub from_date: DateTime<Utc>,
-    pub to_date: DateTime<Utc>
+    pub to_date: DateTime<Utc>,
+    pub session_type_name: Option<String>
 }
 
 impl ScheduleItem {
@@ -43,7 +45,10 @@ impl ScheduleItem {
     pub fn get_title(&self) -> &str {
         match &self.talk_title {
             Some(title) => &title,
-            _ => ""
+            _ => match &self.session_type_name {
+                Some(name) => &name,
+                _ => ""
+            }
         }
     }
 }

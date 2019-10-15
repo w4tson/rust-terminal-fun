@@ -77,12 +77,22 @@ pub fn run() -> Result<(), failure::Error> {
             
 
             if let Some(talk) = app.get_selected() {
-                    
                 let text = vec![
                     Text::styled(format!("Title: {}\n", talk.get_title()), Style::default().fg(Color::Yellow)),
+                    Text::raw(String::from("\n")),
                     Text::raw(format!("Room : {}\n", talk.room_name)),
                     Text::raw(format!("From : {}\n", talk.from_date.to_rfc2822())),
                     Text::raw(format!("To   : {}\n", talk.to_date.to_rfc2822())),
+                    Text::raw(String::from("\n")),
+                    Text::raw(format!("Tags : {}\n",
+                                      talk.tags.as_ref()
+                                          .map(|tags| tags.iter()
+                                              .map(|tag| tag.name.as_str())
+                                              .collect::<Vec<&str>>()
+                                              .join(", "))
+                                          .unwrap_or(String::new()))),
+                    Text::raw(String::from("\n")),
+                    Text::raw(format!("Description : {}\n", talk.talk_description.as_ref().unwrap_or(&String::new()))),
                 ];
                 
                 Paragraph::new(text.iter())
@@ -113,6 +123,15 @@ pub fn run() -> Result<(), failure::Error> {
                 },
                 Key::Char('\t') => {
                     app.day = if app.day == Weekday::Fri { Weekday::Mon } else { app.day.succ() };
+                    let day = match app.day {
+                        Weekday::Mon => "monday",
+                        Weekday::Tue => "tuesday",
+                        Weekday::Wed => "wednesday",
+                        Weekday::Thu => "thursday",
+                        Weekday::Fri => "friday",
+                        _ => "monday"
+                    };
+                    app.talks = get_talks_by_day(day)?;
                     
                 },
                 Key::Left => {

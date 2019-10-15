@@ -2,7 +2,7 @@ pub mod model;
 use std::fs;
 use crate::devoxx::model::{ScheduleItem};
 
-pub fn get_talks_by_day(day: &String) -> Result<Vec<ScheduleItem>, failure::Error> {
+pub fn get_talks_by_day(day: &str) -> Result<Vec<ScheduleItem>, failure::Error> {
     let contents = fs::read_to_string(format!("devoxx-data/{}.json", day))?;
     serde_json::from_str(&contents)
         .map_err(failure::Error::from)

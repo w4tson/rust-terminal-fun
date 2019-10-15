@@ -1,5 +1,3 @@
-#![feature(rustc_private)]
-
 #[macro_use]
 extern crate serde_derive;
 extern crate hyperlocal;
@@ -7,7 +5,6 @@ extern crate futures;
 extern crate tokio_core;
 extern crate serde_json;
 extern crate reqwest;
-extern crate rand;
 extern crate chrono;
 
 
