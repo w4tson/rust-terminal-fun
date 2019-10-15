@@ -1,24 +1,24 @@
-use super::util;
 use std::io;
+use std::io::Write;
 
+use termion::cursor::Goto;
 use termion::event::Key;
 use termion::input::MouseTerminal;
 use termion::raw::IntoRawMode;
 use termion::screen::AlternateScreen;
 use tui::backend::TermionBackend;
-use tui::layout::{Constraint, Direction, Layout, Alignment};
+use tui::layout::{Alignment, Constraint, Direction, Layout};
 use tui::style::{Color, Modifier, Style};
-use tui::widgets::{Block, Borders, SelectableList, Text, Widget, Paragraph, Tabs};
 use tui::Terminal;
+use tui::widgets::{Block, Borders, Paragraph, SelectableList, Tabs, Text, Widget};
 
 use util::event::{Event, Events};
-use super::app::App;
-use std::io::Write;
-use termion::cursor::Goto;
-use crate::ui::app::Mode;
-use crate::devoxx::get_talks_by_day;
-use chrono::Weekday;
 
+use crate::devoxx::get_talks_by_day;
+use crate::ui::app::Mode;
+
+use super::app::App;
+use super::util;
 
 pub fn run() -> Result<(), failure::Error> {
     let talks = get_talks_by_day(&"monday".to_string())?;
@@ -84,13 +84,7 @@ pub fn run() -> Result<(), failure::Error> {
                     Text::raw(format!("From : {}\n", talk.from_date.to_rfc2822())),
                     Text::raw(format!("To   : {}\n", talk.to_date.to_rfc2822())),
                     Text::raw(String::from("\n")),
-                    Text::raw(format!("Tags : {}\n",
-                                      talk.tags.as_ref()
-                                          .map(|tags| tags.iter()
-                                              .map(|tag| tag.name.as_str())
-                                              .collect::<Vec<&str>>()
-                                              .join(", "))
-                                          .unwrap_or(String::new()))),
+                    Text::raw(format!("Tags : {}\n", talk.tags())),
                     Text::raw(String::from("\n")),
                     Text::raw(format!("Description : {}\n", talk.talk_description.as_ref().unwrap_or(&String::new()))),
                 ];
@@ -118,47 +112,11 @@ pub fn run() -> Result<(), failure::Error> {
 
         match events.next()? {
             Event::Input(input) => match input {
-                Key::Char('q') => {
-                    break;
-                },
-                Key::Char('\t') => {
-                    app.day = if app.day == Weekday::Fri { Weekday::Mon } else { app.day.succ() };
-                    let day = match app.day {
-                        Weekday::Mon => "monday",
-                        Weekday::Tue => "tuesday",
-                        Weekday::Wed => "wednesday",
-                        Weekday::Thu => "thursday",
-                        Weekday::Fri => "friday",
-                        _ => "monday"
-                    };
-                    app.talks = get_talks_by_day(day)?;
-                    
-                },
-                Key::Left => {
-                    app.selected = None;
-                }
-                Key::Down => {
-                    app.selected = if let Some(selected) = app.selected {
-                        if selected >= app.talks().len() - 1 {
-                            Some(0)
-                        } else {
-                            Some(selected + 1)
-                        }
-                    } else {
-                        Some(0)
-                    }
-                }
-                Key::Up => {
-                    app.selected = if let Some(selected) = app.selected {
-                        if selected > 0 {
-                            Some(selected - 1)
-                        } else {
-                            Some(app.talks().len() - 1)
-                        }
-                    } else {
-                        Some(0)
-                    }
-                }
+                Key::Ctrl('c') | Key::Ctrl('d') => break,
+                Key::Char('\t') => app.next_tab(),
+                Key::Left => app.selected = None,
+                Key::Down => app.next_talk(),
+                Key::Up => app.previous_talk(),
                 Key::Char('\n') if app.mode == Mode::NORMAL => {
                     if let Some(selected) = app.selected {
                         if let Some(_talk) = app.talks.get(selected) {

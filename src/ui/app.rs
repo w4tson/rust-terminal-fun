@@ -1,6 +1,7 @@
 use tui::style::{Color, Style};
 use crate::devoxx::model::ScheduleItem;
 use chrono::Weekday;
+use crate::devoxx::{get_talks_by_weekday};
 
 #[derive(PartialEq)]
 pub enum Mode {
@@ -69,4 +70,37 @@ impl App {
            repo.get_title().to_lowercase().contains(&self.search_text.to_lowercase())
        }
     }
+    
+    pub fn next_tab(&mut self) {
+        self.day = if self.day == Weekday::Fri { Weekday::Mon } else { self.day.succ() };
+        self.talks = get_talks_by_weekday(&self.day)
+            .expect("Talks not found");
+        self.selected = Some(0);
+    }
+
+    pub fn next_talk(&mut self) {
+        self.selected = if let Some(selected) = self.selected {
+            if selected >= self.talks().len() - 1 {
+                Some(0)
+            } else {
+                Some(selected + 1)
+            }
+        } else {
+            Some(0)
+        }
+    }
+    
+    pub fn previous_talk(&mut self) {
+        self.selected = if let Some(selected) = self.selected {
+            if selected > 0 {
+                Some(selected - 1)
+            } else {
+                Some(self.talks().len() - 1)
+            }
+        } else {
+            Some(0)
+        }
+    }
+    
+    
 }

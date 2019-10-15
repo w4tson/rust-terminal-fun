@@ -51,5 +51,14 @@ impl ScheduleItem {
             }
         }
     }
+    
+    pub fn tags(&self) -> String {
+        self.tags.as_ref()
+            .map(|tags| tags.iter()
+            .map(|tag| tag.name.as_str())
+            .collect::<Vec<&str>>()
+            .join(", "))
+            .unwrap_or(String::new())
+    }
 }
 
