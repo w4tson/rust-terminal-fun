@@ -78,6 +78,13 @@ impl App {
         self.selected = Some(0);
     }
 
+    pub fn previous_tab(&mut self) {
+        self.day = if self.day == Weekday::Mon { Weekday::Fri } else { self.day.pred() };
+        self.talks = get_talks_by_weekday(&self.day)
+            .expect("Talks not found");
+        self.selected = Some(0);
+    }
+
     pub fn next_talk(&mut self) {
         self.selected = if let Some(selected) = self.selected {
             if selected >= self.talks().len() - 1 {
