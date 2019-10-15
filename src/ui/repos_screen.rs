@@ -40,8 +40,24 @@ pub fn run() -> Result<(), failure::Error> {
         terminal.draw(|mut f| {
             let main = Layout::default()
                 .direction(Direction::Vertical)
-                .constraints([Constraint::Length(3), Constraint::Min(20), Constraint::Length(1)].as_ref())
+                .constraints([Constraint::Length(8), Constraint::Length(3), Constraint::Min(20), Constraint::Length(1)].as_ref())
                 .split(f.size());
+
+            let text = vec![
+                Text::raw(String::from(r#"________                                      _________      .__               .___    .__          "#) + "\n"),
+                Text::raw(String::from(r#"\______ \   _______  _________  ______  ___  /   _____/ ____ |  |__   ____   __| _/_ __|  |   ____  "#) + "\n"),
+                Text::raw(String::from(r#" |    |  \_/ __ \  \/ /  _ \  \/  /\  \/  /  \_____  \_/ ___\|  |  \_/ __ \ / __ |  |  \  | _/ __ \ "#) + "\n"),
+                Text::raw(String::from(r#" |    `   \  ___/\   (  <_> >    <  >    <   /        \  \___|   Y  \  ___// /_/ |  |  /  |_\  ___/ "#) + "\n"),
+                Text::raw(String::from(r#"/_______  /\___  >\_/ \____/__/\_ \/__/\_ \ /_______  /\___  >___|  /\___  >____ |____/|____/\___  >"#) + "\n"),
+                Text::raw(String::from(r#"        \/     \/                \/      \/         \/     \/     \/     \/     \/               \/ "#) + "\n")
+            ];
+
+            Paragraph::new(text.iter())
+                .style(Style::default().fg(Color::White).bg(Color::Black))
+                .alignment(Alignment::Left)
+                .style(Style::default().fg(Color::Cyan))
+                .wrap(false)
+                .render(&mut f, main[0]);
 
             Tabs::default()
                 .block(Block::default().borders(Borders::ALL).title("Day"))
@@ -49,19 +65,19 @@ pub fn run() -> Result<(), failure::Error> {
                 .select(app.day.num_days_from_monday() as usize)
                 .style(Style::default().fg(Color::Cyan))
                 .highlight_style(Style::default().fg(Color::Yellow))
-                .render(&mut f, main[0]);
+                .render(&mut f, main[1]);
             
             if app.mode == Mode::SEARCH || app.mode == Mode::FILTERED {
                 Paragraph::new([Text::raw(format!("/{}", &app.search_text))].iter())
                     .style(Style::default().fg(Color::Yellow))
-                    .render(&mut f, main[2]);
+                    .render(&mut f, main[3]);
             }
             
             
             let chunks = Layout::default()
             .direction(Direction::Horizontal)
             .constraints([Constraint::Percentage(50), Constraint::Percentage(50)].as_ref())
-            .split(main[1]);
+            .split(main[2]);
 
            
 
