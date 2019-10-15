@@ -79,16 +79,19 @@ pub fn run() -> Result<(), failure::Error> {
             if let Some(talk) = app.get_selected() {
                 let text = vec![
                     Text::styled(format!("Title: {}\n", talk.get_title()), Style::default().fg(Color::Yellow)),
+                    Text::raw(String::from("\n")),
                     Text::raw(format!("Room : {}\n", talk.room_name)),
                     Text::raw(format!("From : {}\n", talk.from_date.to_rfc2822())),
                     Text::raw(format!("To   : {}\n", talk.to_date.to_rfc2822())),
-//                    Text::raw(format!("Tags : {}\n",
-//                                      talk.tags
-//                                          .map(|tags| tags.iter()
-//                                              .map(|tag| tag.name)
-//                                              .collect::<Vec<String>>()
-//                                              .join(", "))
-//                                          .unwrap_or(String::new()))),
+                    Text::raw(String::from("\n")),
+                    Text::raw(format!("Tags : {}\n",
+                                      talk.tags.as_ref()
+                                          .map(|tags| tags.iter()
+                                              .map(|tag| tag.name.as_str())
+                                              .collect::<Vec<&str>>()
+                                              .join(", "))
+                                          .unwrap_or(String::new()))),
+                    Text::raw(String::from("\n")),
                     Text::raw(format!("Description : {}\n", talk.talk_description.as_ref().unwrap_or(&String::new()))),
                 ];
                 
