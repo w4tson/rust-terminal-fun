@@ -17,6 +17,7 @@ termion = "1.5.3"
 tui = "0.6.2"
 failure = "0.1"
 chrono = { version = "0.4", features = ["serde"] }
+chrono-tz = { version = "0.5.1", features = ["serde"] }
 
 
 [dev-dependencies]
