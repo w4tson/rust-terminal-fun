@@ -14,13 +14,20 @@ pub fn get_talks_by_weekday(day: &Weekday) -> Result<Vec<ScheduleItem>, failure:
         _ => "monday"
     };
 
-    get_talks_by_day(day)
+    get_talks_by_day_api(day)
 }
 
 pub fn get_talks_by_day(day: &str) -> Result<Vec<ScheduleItem>, failure::Error> {
     let contents = fs::read_to_string(format!("devoxx-data/{}.json", day))?;
     serde_json::from_str(&contents)
         .map_err(failure::Error::from)
+}
+
+ pub fn get_talks_by_day_api(day: &str) -> Result<Vec<ScheduleItem>, failure::Error> {
+    let request_url = format!("https://dvbe19.cfp.dev/api/public/schedules/{}", day);
+    let mut response = reqwest::get(&request_url)?;
+    let talks: Vec<ScheduleItem> = response.json().unwrap();
+    Ok(talks)
 }
 
 #[derive(Debug)]
@@ -64,6 +71,13 @@ mod tests {
         if let Ok(talks) = talks {
             assert_eq!(talks.len(), 38);
         }
+    }
+
+    #[test]
+    fn talks_by_day_api() {
+        let talks = get_talks_by_day_api(&"monday".to_string()).unwrap();
+        assert_eq!(false, talks.is_empty());
+
     }
 
     #[test]
