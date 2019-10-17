@@ -96,9 +96,11 @@ pub fn run() -> Result<(), failure::Error> {
                 let text = vec![
                     Text::styled(format!("Title: {}\n", talk.get_title()), Style::default().fg(Color::Yellow)),
                     Text::raw(String::from("\n")),
+                    Text::raw(format!("Speaker(s) : {}\n", talk.speaker_names())),
+                    Text::raw(String::from("\n")),
                     Text::raw(format!("Room : {}\n", talk.room_name)),
-                    Text::raw(format!("From : {}\n", talk.from_date.to_rfc2822())),
-                    Text::raw(format!("To   : {}\n", talk.to_date.to_rfc2822())),
+                    Text::raw(format!("From : {}\n", talk.local_from_date())),
+                    Text::raw(format!("To   : {}\n", talk.local_to_date())),
                     Text::raw(String::from("\n")),
                     Text::raw(format!("Tags : {}\n", talk.tags())),
                     Text::raw(String::from("\n")),
@@ -130,7 +132,8 @@ pub fn run() -> Result<(), failure::Error> {
             Event::Input(input) => match input {
                 Key::Ctrl('c') | Key::Ctrl('d') => break,
                 Key::Char('\t') => app.next_tab(),
-                Key::Left => app.selected = None,
+                Key::Left => app.previous_tab(),
+                Key::Right => app.next_tab(),
                 Key::Down => app.next_talk(),
                 Key::Up => app.previous_talk(),
                 Key::Char('\n') if app.mode == Mode::NORMAL => {
