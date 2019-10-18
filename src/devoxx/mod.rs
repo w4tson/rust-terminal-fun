@@ -26,7 +26,7 @@ pub fn get_talks_by_day(day: &str) -> Result<Vec<ScheduleItem>, failure::Error> 
  pub fn get_talks_by_day_api(day: &str) -> Result<Vec<ScheduleItem>, failure::Error> {
     let request_url = format!("https://dvbe19.cfp.dev/api/public/schedules/{}", day);
     let mut response = reqwest::get(&request_url)?;
-    let talks: Vec<ScheduleItem> = response.json().unwrap();
+    let talks: Vec<ScheduleItem> = response.json()?;
     Ok(talks)
 }
 
@@ -76,8 +76,7 @@ mod tests {
     #[test]
     fn talks_by_day_api() {
         let talks = get_talks_by_day_api(&"monday".to_string()).unwrap();
-        assert_eq!(false, talks.is_empty());
-
+        assert!(!talks.is_empty());
     }
 
     #[test]
