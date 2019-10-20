@@ -24,9 +24,8 @@ pub fn get_talks_by_day(day: &str) -> Result<Vec<ScheduleItem>, failure::Error> 
 }
 
  pub fn get_talks_by_day_api(day: &str) -> Result<Vec<ScheduleItem>, failure::Error> {
-    let request_url = format!("https://dvbe19.cfp.dev/api/public/schedules/{}", day);
-    let mut response = reqwest::get(&request_url)?;
-    let talks: Vec<ScheduleItem> = response.json()?;
+    let request_url = format!("https://dvbe19.cfp.dev/api/public/schedules/{day}", day = day);
+    let talks: Vec<ScheduleItem> = reqwest::get(&request_url)?.json()?;
     Ok(talks)
 }
 
