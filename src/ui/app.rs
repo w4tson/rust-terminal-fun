@@ -5,9 +5,9 @@ use crate::devoxx::{get_talks_by_weekday};
 
 #[derive(PartialEq)]
 pub enum Mode {
-    NORMAL,
-    FILTERED,
-    SEARCH
+    Normal,
+    Filtered,
+    Search
 }
 
 
@@ -31,7 +31,7 @@ impl App {
             talks,
             search_text: String::new(),
             selected: Some(0),
-            mode : Mode::NORMAL,
+            mode : Mode::Normal,
             info_style: Style::default().fg(Color::White),
             warning_style: Style::default().fg(Color::Yellow),
             error_style: Style::default().fg(Color::Magenta),

@@ -31,38 +31,35 @@ pub fn get_talks_by_day(day: &str) -> Result<Vec<ScheduleItem>, failure::Error> 
 }
 
 #[derive(Debug)]
-struct ScheduleItem2 {
-    talk_title: String,
+pub struct ScheduleItem2 {
+    talk_title: Option<String>,
     from_date: DateTime<Utc>
 }
 
-pub fn foo() {
-    let content  = fs::read_to_string("./devoxx-data/talks.txt").unwrap();
-    let lines = content.lines().map(to_schedule).collect::<Vec<ScheduleItem2>>();
-    eprintln!("lines = {:#?}", lines);
-    for line in lines {
-
-    }
-
+pub fn get_schedule_items() -> Result<Vec<ScheduleItem2>, failure::Error> {
+    Ok(read_talks()?.iter().map(to_schedule).collect())
 }
 
-fn to_schedule(line :&str) -> ScheduleItem2 {
-    let foo = line.split(",").collect::<Vec<&str>>();
-    let talk_title = foo.get(0).unwrap().to_string();
-    let from_date = foo.get(1).unwrap();
-//    eprintln!("title = {}", talk_title);
-//    eprintln!("date = {}", from_date);
-    let from_date = DateTime::from_str(from_date).expect("should be a date");
-    ScheduleItem2 { talk_title, from_date }
-
-//    eprintln!("scedule = {:#?}", schedule);
+fn to_schedule(line :&String) -> ScheduleItem2 {
+    let tokens = line.split(",").collect::<Vec<&str>>();
+    let talk_title = tokens.get(0).unwrap().to_string();
+    let from_date = tokens.get(1).unwrap();
+    let from_date = DateTime::from_str(from_date).expect(&format!("{} should include a date", line));
+    ScheduleItem2 { talk_title: Some(talk_title), from_date }
 }
 
+pub fn read_talks() -> Result<Vec<String>, failure::Error> {
+    std::fs::read_to_string("./devoxx-data/talks.txt")
+        .map(|content| content.lines().map(|s| s.to_string()).collect())
+        .map_err(failure::Error::from)
+}
 
 
 #[cfg(test)]
 mod tests {
     use super::*;
+    use spectral::prelude::*;
+
 
     #[test]
     fn test() {
@@ -72,15 +69,44 @@ mod tests {
             assert_eq!(talks.len(), 38);
         }
     }
-
+    
     #[test]
-    fn talks_by_day_api() {
-        let talks = get_talks_by_day_api(&"monday".to_string()).unwrap();
-        assert!(!talks.is_empty());
+    fn test_read_talks() {
+        assert_eq!(read_talks().is_ok(), true); 
+        if let Ok(talks) = read_talks() {
+            assert_eq!(talks.len(), 12);
+            assert_eq!(&talks.get(0).unwrap()[..12], "Monty Python");
+        }
     }
 
     #[test]
-    fn test2() {
-        foo();
+    fn test_structured_data() {
+        let items = get_schedule_items();
+        assert_eq!(items.is_ok(), true);
+        if let Ok(items) = items {
+            assert_eq!(items.len(), 12);
+            assert_eq!(items.get(0).unwrap().talk_title, Some("Monty Python meets the Cloud of Doom".to_string()));
+        }
     }
+    
+    #[test]
+    fn test_get_talks() {
+        let mon_talks = get_talks_by_day("monday");
+        assert_eq!(mon_talks.is_ok(), true);
+        let mut found_rust_lab = false;
+        let expected_title = Some(String::from("Rust for Java Developers"));
+        if let Ok(talks) = mon_talks {
+          
+            for talk in &talks {
+                match talk {
+                    ScheduleItem { talk_title: title, .. } if title == &expected_title => found_rust_lab = true,
+                    _ => ()
+                } ;
+            }
+
+        }
+        assert_eq!(found_rust_lab, true);
+    }
+    
+
 }

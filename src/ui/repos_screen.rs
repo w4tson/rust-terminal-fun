@@ -67,7 +67,7 @@ pub fn run() -> Result<(), failure::Error> {
                 .highlight_style(Style::default().fg(Color::Yellow))
                 .render(&mut f, main[1]);
             
-            if app.mode == Mode::SEARCH || app.mode == Mode::FILTERED {
+            if app.mode == Mode::Search || app.mode == Mode::Filtered {
                 Paragraph::new([Text::raw(format!("/{}", &app.search_text))].iter())
                     .style(Style::default().fg(Color::Yellow))
                     .render(&mut f, main[3]);
@@ -83,7 +83,7 @@ pub fn run() -> Result<(), failure::Error> {
 
             let style = Style::default().fg(Color::White).bg(Color::Black);
             SelectableList::default()
-                .block(Block::default().borders(Borders::ALL).title("Talks"))
+                .block(Block::default().borders(Borders::ALL).title("Schedule"))
                 .items(&app.talk_titles())
                 .select(app.selected)
                 .style(style)
@@ -108,7 +108,7 @@ pub fn run() -> Result<(), failure::Error> {
                 ];
                 
                 Paragraph::new(text.iter())
-                    .block(Block::default().title("Talk Details").borders(Borders::ALL))
+                    .block(Block::default().title("Details").borders(Borders::ALL))
                     .style(Style::default().fg(Color::White).bg(Color::Black))
                     .alignment(Alignment::Left)
                     .wrap(true)
@@ -136,30 +136,30 @@ pub fn run() -> Result<(), failure::Error> {
                 Key::Right => app.next_tab(),
                 Key::Down => app.next_talk(),
                 Key::Up => app.previous_talk(),
-                Key::Char('\n') if app.mode == Mode::NORMAL => {
+                Key::Char('\n') if app.mode == Mode::Normal => {
                     if let Some(selected) = app.selected {
                         if let Some(_talk) = app.talks.get(selected) {
 //                          pressed enter on a talk
                         }
                     }
                 }
-                Key::Char('\n') if app.mode == Mode::SEARCH => {
-                    app.mode = Mode::FILTERED;
+                Key::Char('\n') if app.mode == Mode::Search => {
+                    app.mode = Mode::Filtered;
                     terminal.hide_cursor()?;
                 }
                 Key::Char('/') => {
-                    app.mode = Mode::SEARCH;
+                    app.mode = Mode::Search;
                     terminal.show_cursor()?;
                 }
                 Key::Esc => {
                     terminal.hide_cursor()?;
                     app.search_text = "".to_string();
-                    app.mode = Mode::NORMAL
+                    app.mode = Mode::Normal
                 },
-                Key::Backspace if app.mode == Mode::SEARCH => {
+                Key::Backspace if app.mode == Mode::Search => {
                     app.search_text.pop();
                 }
-                Key::Char(c) if app.mode == Mode::SEARCH => {
+                Key::Char(c) if app.mode == Mode::Search => {
                     app.search_text.push(c);
                 }
                 _ => {}
