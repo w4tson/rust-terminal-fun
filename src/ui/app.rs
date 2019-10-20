@@ -2,6 +2,7 @@ use tui::style::{Color, Style};
 use crate::devoxx::model::ScheduleItem;
 use chrono::Weekday;
 use crate::devoxx::{get_talks_by_weekday};
+use chrono::Weekday::Mon;
 
 #[derive(PartialEq)]
 pub enum Mode {
@@ -10,32 +11,25 @@ pub enum Mode {
     Search
 }
 
-
 #[allow(dead_code)]
 pub struct App {
     pub day: Weekday,
     pub talks: Vec<ScheduleItem>,
     pub selected: Option<usize>,
     pub search_text : String,
-    pub mode: Mode,
-    pub info_style: Style,
-    pub warning_style: Style,
-    pub error_style: Style,
-    pub critical_style: Style,
+    pub mode: Mode
 }
 
 impl App {
-    pub fn new(talks: Vec<ScheduleItem>) -> App {
+    pub fn new() -> App {
+        let talks = get_talks_by_weekday(&Mon).expect("Problem initialising talks");
+
         App {
             day : Weekday::Mon,
             talks,
             search_text: String::new(),
             selected: Some(0),
-            mode : Mode::Normal,
-            info_style: Style::default().fg(Color::White),
-            warning_style: Style::default().fg(Color::Yellow),
-            error_style: Style::default().fg(Color::Magenta),
-            critical_style: Style::default().fg(Color::Red),
+            mode : Mode::Normal
         }
     }
 
@@ -72,14 +66,17 @@ impl App {
     }
     
     pub fn next_tab(&mut self) {
-        self.day = if self.day == Weekday::Fri { Weekday::Mon } else { self.day.succ() };
-        self.talks = get_talks_by_weekday(&self.day)
-            .expect("Talks not found");
-        self.selected = Some(0);
+        let new_day = if self.day == Weekday::Fri { Weekday::Mon } else { self.day.succ() };
+        self.set_current_day(new_day);
     }
 
     pub fn previous_tab(&mut self) {
-        self.day = if self.day == Weekday::Mon { Weekday::Fri } else { self.day.pred() };
+        let new_day = if self.day == Weekday::Mon { Weekday::Fri } else { self.day.pred() };
+        self.set_current_day(new_day);
+    }
+    
+    fn set_current_day(&mut self, day: Weekday) {
+        self.day = day;
         self.talks = get_talks_by_weekday(&self.day)
             .expect("Talks not found");
         self.selected = Some(0);
@@ -108,6 +105,4 @@ impl App {
             Some(0)
         }
     }
-    
-    
 }

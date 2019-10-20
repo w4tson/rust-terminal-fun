@@ -14,15 +14,13 @@ use tui::widgets::{Block, Borders, Paragraph, SelectableList, Tabs, Text, Widget
 
 use util::event::{Event, Events};
 
-use crate::devoxx::get_talks_by_day;
 use crate::ui::app::Mode;
 
 use super::app::App;
 use super::util;
 
 pub fn run() -> Result<(), failure::Error> {
-    let talks = get_talks_by_day(&"monday".to_string())?;
-    
+   
     // Terminal initialization
     let stdout = io::stdout().into_raw_mode()?;
     let stdout = MouseTerminal::from(stdout);
@@ -34,7 +32,7 @@ pub fn run() -> Result<(), failure::Error> {
     let events = Events::new();
 
     // App
-    let mut app = App::new(talks);
+    let mut app = App::new();
 
     loop {
         terminal.draw(|mut f| {
