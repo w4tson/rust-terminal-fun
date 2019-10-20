@@ -10,6 +10,9 @@ extern crate chrono;
 
 #[allow(unused_imports)]
 use crate::docker::hello_docker;
+use std::io;
+use termion::raw::IntoRawMode;
+use std::io::Write;
 
 pub mod docker;
 pub mod github;
@@ -17,5 +20,12 @@ pub mod ui;
 pub mod devoxx; 
 
 fn main() -> Result<(), failure::Error> {
-    ui::repos_screen::run()
+    let result = ui::repos_screen::run();
+    
+    if let Err(e) = result {
+        let mut stdout = io::stdout();
+        stdout.write_all(format!("{:#?}", e).as_bytes())?;
+    } 
+   
+    Ok(())
 }

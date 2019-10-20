@@ -21,16 +21,16 @@ pub struct App {
 }
 
 impl App {
-    pub fn new() -> App {
-        let talks = get_talks_by_weekday(&Mon).expect("Problem initialising talks");
+    pub fn new() -> Result<App, failure::Error> {
+        let talks = get_talks_by_weekday(&Mon)?;
 
-        App {
+        Ok(App {
             day : Weekday::Mon,
             talks,
             search_text: String::new(),
             selected: Some(0),
             mode : Mode::Normal
-        }
+        })
     }
 
     pub fn advance(&mut self) {

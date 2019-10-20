@@ -32,7 +32,7 @@ pub fn run() -> Result<(), failure::Error> {
     let events = Events::new();
 
     // App
-    let mut app = App::new();
+    let mut app = App::new()?;
 
     loop {
         terminal.draw(|mut f| {
