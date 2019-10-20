@@ -1,7 +1,6 @@
 [package]
-name = "rust-web"
+name = "devoxx-schedule"
 version = "0.1.0"
-authors = ["Paul Watson <paul.watson@pdwtech.com>"]
 edition = "2018"
 
 [dependencies]
@@ -18,9 +17,9 @@ tui = "0.6.2"
 failure = "0.1"
 chrono = { version = "0.4", features = ["serde"] }
 chrono-tz = { version = "0.5.1", features = ["serde"] }
+structopt = { version = "0.3" }
 
 
 [dev-dependencies]
 stderrlog = "0.4"
 rand = "0.6"
-structopt = "0.2"

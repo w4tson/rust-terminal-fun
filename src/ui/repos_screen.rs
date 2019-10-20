@@ -18,8 +18,9 @@ use crate::ui::app::Mode;
 
 use super::app::App;
 use super::util;
+use crate::Options;
 
-pub fn run() -> Result<(), failure::Error> {
+pub fn run(options: Options) -> Result<(), failure::Error> {
    
     // Terminal initialization
     let stdout = io::stdout().into_raw_mode()?;
@@ -30,9 +31,8 @@ pub fn run() -> Result<(), failure::Error> {
     terminal.hide_cursor()?;
 
     let events = Events::new();
-
     // App
-    let mut app = App::new()?;
+    let mut app = App::new(options.offline)?;
 
     loop {
         terminal.draw(|mut f| {
@@ -129,9 +129,9 @@ pub fn run() -> Result<(), failure::Error> {
         match events.next()? {
             Event::Input(input) => match input {
                 Key::Ctrl('c') | Key::Ctrl('d') => break,
-                Key::Char('\t') => app.next_tab(),
-                Key::Left => app.previous_tab(),
-                Key::Right => app.next_tab(),
+                Key::Char('\t') => app.next_tab()?,
+                Key::Left => app.previous_tab()?,
+                Key::Right => app.next_tab()?,
                 Key::Down => app.next_talk(),
                 Key::Up => app.previous_talk(),
                 Key::Char('\n') if app.mode == Mode::Normal => {

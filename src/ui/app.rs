@@ -16,19 +16,21 @@ pub struct App {
     pub talks: Vec<ScheduleItem>,
     pub selected: Option<usize>,
     pub search_text : String,
-    pub mode: Mode
+    pub mode: Mode,
+    pub offline: bool
 }
 
 impl App {
-    pub fn new() -> Result<App, failure::Error> {
-        let talks = get_talks_by_weekday(&Mon)?;
+    pub fn new(offline: bool) -> Result<App, failure::Error> {
+        let talks = get_talks_by_weekday(&Mon, offline)?;
 
         Ok(App {
             day : Weekday::Mon,
             talks,
             search_text: String::new(),
             selected: Some(0),
-            mode : Mode::Normal
+            mode : Mode::Normal,
+            offline: offline
         })
     }
 
@@ -64,21 +66,21 @@ impl App {
        }
     }
     
-    pub fn next_tab(&mut self) {
+    pub fn next_tab(&mut self) -> Result<(), failure::Error> {
         let new_day = if self.day == Weekday::Fri { Weekday::Mon } else { self.day.succ() };
-        self.set_current_day(new_day);
+        self.set_current_day(new_day)
     }
 
-    pub fn previous_tab(&mut self) {
+    pub fn previous_tab(&mut self) -> Result<(), failure::Error> {
         let new_day = if self.day == Weekday::Mon { Weekday::Fri } else { self.day.pred() };
-        self.set_current_day(new_day);
+        self.set_current_day(new_day)
     }
     
-    fn set_current_day(&mut self, day: Weekday) {
+    fn set_current_day(&mut self, day: Weekday) -> Result<(), failure::Error>{
         self.day = day;
-        self.talks = get_talks_by_weekday(&self.day)
-            .expect("Talks not found");
+        self.talks = get_talks_by_weekday(&day.clone(), self.offline)?;
         self.selected = Some(0);
+        Ok(())
     }
 
     pub fn next_talk(&mut self) {

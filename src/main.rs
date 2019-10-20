@@ -10,16 +10,22 @@ extern crate chrono;
 
 #[allow(unused_imports)]
 use crate::docker::hello_docker;
+
 use std::io;
 use std::io::Write;
+
+use structopt::StructOpt;
+
 
 pub mod docker;
 pub mod github;
 pub mod ui; 
 pub mod devoxx; 
 
+
 fn main() -> Result<(), failure::Error> {
-    let result = ui::repos_screen::run();
+    let options = Options::from_args();
+    let result = ui::repos_screen::run(options);
     
     if let Err(e) = result {
         let mut stdout = io::stdout();
@@ -27,4 +33,13 @@ fn main() -> Result<(), failure::Error> {
     } 
    
     Ok(())
+}
+
+#[derive(Debug, StructOpt)]
+#[structopt(name = "devoxx-schedule", about = "A command line tool to browse the Devoxx schedule")]
+pub struct Options {
+    #[structopt(short, long)]
+    /// Uses the schedule from local disk, instead of the Devoxx API
+    pub offline: bool
+
 }

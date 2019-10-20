@@ -6,7 +6,7 @@ use std::str::FromStr;
 
 const DEVOXX_HOST: &str = "dvbe19.cfp.dev";
 
-pub fn get_talks_by_weekday(day: &Weekday) -> Result<Vec<ScheduleItem>, failure::Error> {
+pub fn get_talks_by_weekday(day: &Weekday, offline: bool) -> Result<Vec<ScheduleItem>, failure::Error> {
     let day = match day {
         Weekday::Mon => "monday",
         Weekday::Tue => "tuesday",
@@ -16,7 +16,7 @@ pub fn get_talks_by_weekday(day: &Weekday) -> Result<Vec<ScheduleItem>, failure:
         _ => "monday"
     };
 
-    get_talks_by_day_api(day)
+    if offline { get_talks_by_day(day) } else { get_talks_by_day_api(day) }
 }
 
 pub fn get_talks_by_day(day: &str) -> Result<Vec<ScheduleItem>, failure::Error> {
