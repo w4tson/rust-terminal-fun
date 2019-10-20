@@ -4,7 +4,7 @@ use crate::devoxx::model::{ScheduleItem};
 use chrono::{Weekday, DateTime, Utc};
 use std::str::FromStr;
 
-const devoxx_host: &str = "dvbe19.cfp.dev";
+const DEVOXX_HOST: &str = "dvbe19.cfp.dev";
 
 pub fn get_talks_by_weekday(day: &Weekday) -> Result<Vec<ScheduleItem>, failure::Error> {
     let day = match day {
@@ -26,7 +26,7 @@ pub fn get_talks_by_day(day: &str) -> Result<Vec<ScheduleItem>, failure::Error> 
 }
 
  pub fn get_talks_by_day_api(day: &str) -> Result<Vec<ScheduleItem>, failure::Error> {
-    let request_url = format!("https://{}/api/public/schedules/{day}", devoxx_host, day = day);
+    let request_url = format!("https://{}/api/public/schedules/{day}", DEVOXX_HOST, day = day);
     let talks: Vec<ScheduleItem> = reqwest::get(&request_url)?.json()?;
     Ok(talks)
 }
