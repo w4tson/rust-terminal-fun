@@ -58,13 +58,11 @@ pub fn read_talks() -> Result<Vec<String>, failure::Error> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use spectral::prelude::*;
-
 
     #[test]
     fn test() {
         let talks = get_talks_by_day(&"monday".to_string());
-        assert_eq!(true, talks.is_ok());
+        assert!(talks.is_ok());
         if let Ok(talks) = talks {
             assert_eq!(talks.len(), 38);
         }
@@ -72,7 +70,7 @@ mod tests {
     
     #[test]
     fn test_read_talks() {
-        assert_eq!(read_talks().is_ok(), true); 
+        assert!(read_talks().is_ok()); 
         if let Ok(talks) = read_talks() {
             assert_eq!(talks.len(), 12);
             assert_eq!(&talks.get(0).unwrap()[..12], "Monty Python");
@@ -82,7 +80,7 @@ mod tests {
     #[test]
     fn test_structured_data() {
         let items = get_schedule_items();
-        assert_eq!(items.is_ok(), true);
+        assert!(items.is_ok());
         if let Ok(items) = items {
             assert_eq!(items.len(), 12);
             assert_eq!(items.get(0).unwrap().talk_title, Some("Monty Python meets the Cloud of Doom".to_string()));
@@ -92,7 +90,7 @@ mod tests {
     #[test]
     fn test_get_talks() {
         let mon_talks = get_talks_by_day("monday");
-        assert_eq!(mon_talks.is_ok(), true);
+        assert!(mon_talks.is_ok());
         let mut found_rust_lab = false;
         let expected_title = Some(String::from("Rust for Java Developers"));
         if let Ok(talks) = mon_talks {
