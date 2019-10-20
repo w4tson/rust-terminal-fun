@@ -1,4 +1,3 @@
-use tui::style::{Color, Style};
 use crate::devoxx::model::ScheduleItem;
 use chrono::Weekday;
 use crate::devoxx::{get_talks_by_weekday};

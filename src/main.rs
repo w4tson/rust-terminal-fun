@@ -11,7 +11,6 @@ extern crate chrono;
 #[allow(unused_imports)]
 use crate::docker::hello_docker;
 use std::io;
-use termion::raw::IntoRawMode;
 use std::io::Write;
 
 pub mod docker;
