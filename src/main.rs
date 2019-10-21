@@ -1,5 +1,3 @@
-#[macro_use]
-extern crate serde_derive;
 extern crate hyperlocal;
 extern crate futures;
 extern crate tokio_core;
