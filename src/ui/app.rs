@@ -17,6 +17,7 @@ pub struct App {
     pub selected: Option<usize>,
     pub search_text : String,
     pub mode: Mode,
+    pub should_quit: bool,
     pub offline: bool
 }
 
@@ -30,7 +31,8 @@ impl App {
             search_text: String::new(),
             selected: Some(0),
             mode : Mode::Normal,
-            offline: offline
+            should_quit: false,
+            offline
         })
     }
 
