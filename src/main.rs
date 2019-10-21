@@ -23,7 +23,7 @@ pub mod devoxx;
 
 fn main() -> Result<(), failure::Error> {
     let options = Options::from_args();
-    let result = ui::repos_screen::run(options);
+    let result = ui::screen::run(options);
     
     if let Err(e) = result {
         let mut stdout = io::stdout();
