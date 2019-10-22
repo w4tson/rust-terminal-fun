@@ -15,7 +15,7 @@ pub struct App {
     pub day: Weekday,
     pub talks: Vec<ScheduleItem>,
     pub selected: Option<usize>,
-    pub search_text : String,
+    pub search_text: String,
     pub mode: Mode,
     pub should_quit: bool,
     pub offline: bool
@@ -49,7 +49,7 @@ impl App {
     pub fn talks(&self) -> Vec<&ScheduleItem> {
         self.talks
             .iter()
-            .filter(|&repo| self.filter(repo))
+            .filter(|&talk| self.filter(talk))
             .collect()
     }
 
@@ -60,11 +60,11 @@ impl App {
             .collect()
     }
     
-    fn filter(&self, repo: &ScheduleItem) -> bool {
+    fn filter(&self, talk: &ScheduleItem) -> bool {
        if self.search_text.is_empty() {
            true
        } else {
-           repo.get_title().to_lowercase().contains(&self.search_text.to_lowercase())
+           talk.get_title().to_lowercase().contains(&self.search_text.to_lowercase())
        }
     }
     
