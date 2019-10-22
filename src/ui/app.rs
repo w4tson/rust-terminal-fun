@@ -42,7 +42,7 @@ impl App {
 
     pub fn get_selected(&self) -> Option<&ScheduleItem> {
         self.selected.map(|i |{
-            self.talks.get(i).unwrap()
+            self.talks().get(i).unwrap().to_owned()
         })
     }
     

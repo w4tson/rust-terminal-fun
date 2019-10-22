@@ -78,9 +78,11 @@ fn handle_events(events: &Events, app: &mut App) -> Result<(), failure::Error> {
             },
             Key::Backspace if app.mode == Mode::Search => {
                 app.search_text.pop();
+                app.selected = Some(0);
             }
             Key::Char(c) if app.mode == Mode::Search => {
                 app.search_text.push(c);
+                app.selected = Some(0);
             }
             _ => {}
         },
