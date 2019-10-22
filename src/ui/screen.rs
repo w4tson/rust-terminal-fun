@@ -219,7 +219,7 @@ fn draw_detail<B>(f: &mut Frame<B>, area: Rect, app: &App)
             Text::raw(String::from("\n")),
             Text::raw(format!("Tags : {}\n", talk.tags())),
             Text::raw(String::from("\n")),
-            Text::raw(format!("Description : {}\n", talk.talk_description.as_ref().unwrap_or(&String::new()))),
+            Text::raw(format!("Description : {}\n", talk.get_description())),
         ];
 
         Paragraph::new(text.iter())

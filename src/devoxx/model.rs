@@ -81,5 +81,12 @@ impl ScheduleItem {
                 .join(", "))
             .unwrap_or(String::new())
     }
+
+    pub fn get_description(&self) -> &str {
+        match &self.talk_description {
+            Some(description) => &description,
+            _ => ""
+        }
+    }
 }
 
