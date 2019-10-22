@@ -1,5 +1,3 @@
-#[macro_use]
-extern crate serde_derive;
 extern crate hyperlocal;
 extern crate futures;
 extern crate tokio_core;
@@ -25,7 +23,7 @@ pub mod devoxx;
 
 fn main() -> Result<(), failure::Error> {
     let options = Options::from_args();
-    let result = ui::repos_screen::run(options);
+    let result = ui::screen::run(options);
     
     if let Err(e) = result {
         let mut stdout = io::stdout();

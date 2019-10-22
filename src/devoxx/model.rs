@@ -1,4 +1,5 @@
 use chrono::{DateTime, Utc};
+use serde_derive::Deserialize;
 
 #[derive(Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
@@ -79,6 +80,13 @@ impl ScheduleItem {
                 .collect::<Vec<String>>()
                 .join(", "))
             .unwrap_or(String::new())
+    }
+
+    pub fn get_description(&self) -> &str {
+        match &self.talk_description {
+            Some(description) => &description,
+            _ => ""
+        }
     }
 }
 

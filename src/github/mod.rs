@@ -1,5 +1,6 @@
 use std::fs;
 use chrono::{DateTime, Utc};
+use serde_derive::Deserialize;
 
 #[derive(Deserialize, Debug)]
 pub struct User {

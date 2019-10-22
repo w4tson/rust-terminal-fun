@@ -71,7 +71,8 @@ mod tests {
     
     #[test]
     fn test_read_talks() {
-        assert!(read_talks().is_ok()); 
+        let items = read_talks();
+        assert!(items.is_ok(), "{:?}", items.err());
         if let Ok(talks) = read_talks() {
             assert_eq!(talks.len(), 12);
             assert_eq!(&talks.get(0).unwrap()[..12], "Monty Python");
@@ -81,7 +82,7 @@ mod tests {
     #[test]
     fn test_structured_data() {
         let items = get_schedule_items();
-        assert!(items.is_ok());
+        assert!(items.is_ok(), "{:?}", items.err());
         if let Ok(items) = items {
             assert_eq!(items.len(), 12);
             assert_eq!(items.get(0).unwrap().talk_title, Some("Monty Python meets the Cloud of Doom".to_string()));
@@ -91,7 +92,7 @@ mod tests {
     #[test]
     fn test_get_talks() {
         let mon_talks = get_talks_by_day("monday");
-        assert!(mon_talks.is_ok());
+        assert!(mon_talks.is_ok(), "{:?}", mon_talks.err());
         let mut found_rust_lab = false;
         let expected_title = Some(String::from("Rust for Java Developers"));
         if let Ok(talks) = mon_talks {
@@ -100,12 +101,9 @@ mod tests {
                 match talk {
                     ScheduleItem { talk_title: title, .. } if title == &expected_title => found_rust_lab = true,
                     _ => ()
-                } ;
+                };
             }
-
         }
         assert_eq!(found_rust_lab, true);
     }
-    
-
 }
